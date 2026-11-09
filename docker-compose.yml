@@ -1,0 +1,67 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: FunEvents.Server/Dockerfile
+    ports:
+      - "${API_PORT:-8087}:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__postgresdb: Host=postgres;Port=5432;Database=FunEvents;Username=postgres;Password=${POSTGRES_PASSWORD:-funevents-dev};Timeout=30;Command Timeout=30;Keepalive=30
+      Security__AdminApiKey: ${ADMIN_API_KEY:-dev-admin-key-cambiar}
+      LOG_LEVEL: ${LOG_LEVEL:-Debug}
+
+      RequestTimeout__Seconds: ${REQUEST_TIMEOUT_SECONDS:-120}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+    mem_limit: 512m
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: FunEvents
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-funevents-dev}
+
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+      TZ: America/Sao_Paulo
+    ports:
+      - "${PG_PORT:-5439}:5432"
+    volumes:
+      - funevents_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d FunEvents"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 10s
+    restart: unless-stopped
+    shm_size: 128mb
+    mem_limit: 512m
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@funevents.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-funevents-dev}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+
+      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 30
+    ports:
+      - "${PGADMIN_PORT:-5057}:80"
+    volumes:
+      - funevents_pgadmin:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  funevents_pgdata:
+    name: funevents_pgdata
+  funevents_pgadmin:
+    name: funevents_pgadmin

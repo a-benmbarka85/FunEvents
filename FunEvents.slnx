@@ -1,0 +1,12 @@
+<Solution>
+  <Project Path="frontend/frontend.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="FunEvents.Domain/FunEvents.Domain.csproj" />
+  <Project Path="FunEvents.Application/FunEvents.Application.csproj" />
+  <Project Path="FunEvents.Tests/FunEvents.Tests.csproj" />
+  <Project Path="FunEvents.AppHost/FunEvents.AppHost.csproj" />
+  <Project Path="FunEvents.ConsoleClient/FunEvents.ConsoleClient.csproj" />
+  <Project Path="FunEvents.Server/FunEvents.Server.csproj" />
+</Solution>

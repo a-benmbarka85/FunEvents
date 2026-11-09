@@ -1,0 +1,19 @@
+@Server_HostAddress = http://localhost:5361
+@ApiKey = dev-admin-key-change-me
+
+GET {{Server_HostAddress}}/api/eventos
+Accept: application/json
+
+POST {{Server_HostAddress}}/api/reservations
+Content-Type: application/json
+
+{
+  "eventoId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "usuarioId": "72d5b565-df45-4235-8656-7871ad26e95c",
+  "tipoEntradaId": "34197f02-aeba-476b-a5af-d8a54a96ee37",
+  "ticketQuantity": 2,
+  "canal": "Online"
+}
+
+POST {{Server_HostAddress}}/api/seed
+X-Api-Key: {{ApiKey}}
